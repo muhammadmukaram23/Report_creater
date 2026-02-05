@@ -1,0 +1,283 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+    <style>
+        @page {
+            size: A4 landscape;
+            margin: 1cm;
+        }
+
+        @page image_page {
+            size: A4 portrait;
+            margin: 1.5cm;
+        }
+
+        @page cover_page {
+            size: A4 landscape;
+            margin: 0;
+        }
+
+        body {
+            font-family: Arial, sans-serif;
+            font-size: 8pt;
+            color: #333;
+        }
+
+
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            margin-bottom: 20px;
+        }
+
+        th,
+        td {
+            border: 1px solid #000;
+            padding: 2px;
+            text-align: left;
+            vertical-align: top;
+        }
+
+        th {
+            background-color: #1C4587;
+            color: white;
+            font-weight: bold;
+            text-align: center;
+        }
+
+        .sub-th {
+            background-color: #1C4587;
+            font-size: 7pt;
+            opacity: 0.9;
+        }
+
+        .text-center {
+            text-align: center;
+        }
+
+        /* Image Page Styles */
+        .image-page {
+            page-break-before: always;
+            page: image_page;
+        }
+
+        .comp-header {
+            text-align: center;
+            border-bottom: 2px solid #2c3e50;
+            padding-bottom: 10px;
+            margin-bottom: 30px;
+        }
+
+        .comp-header h2 {
+            margin: 0;
+            color: #2c3e50;
+            font-size: 16pt;
+        }
+
+        .scheme-name {
+            font-size: 10pt;
+            color: #7f8c8d;
+            margin-top: 5px;
+        }
+
+        .image-pair-table {
+            width: 100%;
+            border: none;
+        }
+
+        .image-pair-table td {
+            border: none;
+            width: 50%;
+            padding: 10px;
+            text-align: center;
+        }
+
+        .img-label {
+            font-size: 14pt;
+            font-weight: bold;
+            margin-bottom: 20px;
+            display: block;
+            text-align: center;
+        }
+
+        .before-label {
+            color: #e67e22;
+        }
+
+        .after-label {
+            color: #27ae60;
+        }
+
+        .image-pair-table {
+            width: 100%;
+            border: none;
+        }
+
+        .image-pair-table {
+            width: 100%;
+            border: none;
+            margin-left: auto;
+            margin-right: auto;
+        }
+
+        .image-pair-table td {
+            border: none;
+            width: 50%;
+            padding: 10px;
+            text-align: center;
+            vertical-align: middle;
+            height: 500px;
+        }
+
+        .img-container {
+            width: 400px;
+            height: 400px;
+            margin: 0 auto;
+            text-align: center;
+        }
+
+        .img-container img {
+            width: 400px;
+            height: 400px;
+        }
+
+        .no-image {
+            color: #999;
+            font-style: italic;
+            font-size: 14pt;
+            display: block;
+            margin-top: 180px;
+        }
+    </style>
+</head>
+
+<body>
+    <div style="page: cover_page; text-align: center; width: 100%; height: 100%;">
+        <img src="{{ cover_image_path }}" style="width: 100%; height: 100%; object-fit: cover;" />
+    </div>
+
+    <div style="page-break-before: always;"></div>
+
+    <table>
+        <thead>
+            <tr>
+                <th colspan="11"
+                    style="font-size: 14pt; padding: 4px; background-color: white; color: black; border-bottom: 2px solid #000;">
+                    Overview of Priority Projects {{ today }}
+                </th>
+            </tr>
+            <tr>
+                <th rowspan="2" style="width: 35px;">Sr. No.</th>
+                <th rowspan="2" style="width: 60px;">GS No.</th>
+                <th rowspan="2">Name of Scheme</th>
+                <th rowspan="2" style="width: 150px;">Components</th>
+                <th rowspan="2" style="width: 100px;">Starting Date</th>
+                <th colspan="4">Financial Detail</th>
+                <th rowspan="2" style="width: 55px;">Labour Deployed</th>
+                <th rowspan="2" style="width: 250px;">Remarks</th>
+            </tr>
+            <tr class="sub-th">
+                <th style="width: 45px;">Physical Progress (%)</th>
+                <th style="width: 55px;">Total Allocation (M)</th>
+                <th style="width: 55px;">Funds Released (M)</th>
+                <th style="width: 70px;">Committed Funds Utilized (M)</th>
+            </tr>
+        </thead>
+        <tbody>
+            {% for scheme in schemes %}
+            {% set num_components = scheme.components|length %}
+            {% set active_rowspan = num_components if num_components > 0 else 1 %}
+            <tr>
+                <td rowspan="{{ active_rowspan }}" class="text-center">{{ loop.index }}</td>
+                <td rowspan="{{ active_rowspan }}" class="text-center">{{ scheme.gs_no }}</td>
+                <td rowspan="{{ active_rowspan }}" style="font-weight: bold;">{{ scheme.name_of_scheme }}</td>
+
+                {# First Component Column Segment #}
+                {% if num_components > 0 %}
+                <td
+                    style="width: 150px; padding: 2px 4px; vertical-align: top; {% if num_components > 1 %}border-bottom: hidden;{% endif %}">
+                    <b>1.</b> <span style="font-weight: normal;">{{ scheme.components[0].component_name }}</span>
+                </td>
+                <td
+                    style="width: 100px; text-align: center; padding: 2px 4px; vertical-align: top; font-weight: bold; {% if num_components > 1 %}border-bottom: hidden;{% endif %}">
+                    {{ scheme.components[0].starting_date or '-' }}
+                </td>
+                {% else %}
+                <td style="width: 150px; padding: 2px 4px; vertical-align: top;">-</td>
+                <td style="width: 100px; text-align: center; padding: 2px 4px; vertical-align: top;">-</td>
+                {% endif %}
+
+                <td rowspan="{{ active_rowspan }}" class="text-center" style="font-weight: bold;">{{
+                    scheme.physical_progress or 0 }}%</td>
+                <td rowspan="{{ active_rowspan }}" class="text-center">{{ scheme.total_allocation or '-' }}</td>
+                <td rowspan="{{ active_rowspan }}" class="text-center">{{ scheme.funds_released or '-' }}</td>
+                <td rowspan="{{ active_rowspan }}" class="text-center">{{ scheme.committed_fund_utilization or '-' }}
+                </td>
+                <td rowspan="{{ active_rowspan }}" class="text-center">{{ scheme.labour_deployed or 0 }}</td>
+                <td rowspan="{{ active_rowspan }}">{{ scheme.remarks or '' }}</td>
+            </tr>
+
+            {# Remaining Components #}
+            {% for comp in scheme.components[1:] %}
+            <tr>
+                <td
+                    style="width: 150px; padding: 2px 4px; vertical-align: top; border-top: hidden; {% if not loop.last %}border-bottom: hidden;{% endif %}">
+                    <b>{{ loop.index + 1 }}.</b> <span style="font-weight: normal;">{{ comp.component_name }}</span>
+                </td>
+                <td
+                    style="width: 100px; text-align: center; padding: 2px 4px; vertical-align: top; font-weight: bold; border-top: hidden; {% if not loop.last %}border-bottom: hidden;{% endif %}">
+                    {{ comp.starting_date or '-' }}
+                </td>
+            </tr>
+            {% endfor %}
+            {% endfor %}
+        </tbody>
+    </table>
+
+    {% for scheme in schemes %}
+    {% for comp in scheme.components %}
+    {% if comp.is_active %}
+    {% for pair in comp.image_pairs %}
+    <div class="image-page">
+        <div class="comp-header">
+            <h2>{{ comp.component_name }}</h2>
+            <div class="scheme-name">Scheme: {{ scheme.name_of_scheme }}</div>
+        </div>
+
+        <table class="image-pair-table" align="center">
+            <tr>
+                <td>
+                    <span class="img-label before-label">BEFORE WORK</span>
+                    <div class="img-container">
+                        {% if pair[0] %}
+                        <img src="{{ pair[0].full_path }}" />
+                        {% else %}
+                        <span class="no-image">No before image</span>
+                        {% endif %}
+                    </div>
+                </td>
+                <td>
+                    <span class="img-label after-label">AFTER WORK</span>
+                    <div class="img-container">
+                        {% if pair[1] %}
+                        <img src="{{ pair[1].full_path }}" />
+                        {% else %}
+                        <span class="no-image">No after image</span>
+                        {% endif %}
+                    </div>
+                </td>
+            </tr>
+        </table>
+
+        <div style="text-align: center; margin-top: 40px; color: #95a5a6; font-size: 7pt;">
+            Page {{ loop.index }} of component images - Generated on {{ today }}
+        </div>
+    </div>
+    {% endfor %}
+    {% endif %}
+    {% endfor %}
+    {% endfor %}
+</body>
+
+</html>
