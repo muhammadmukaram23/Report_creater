@@ -4,6 +4,7 @@ import { schemeService } from '../api';
 import { Plus, Calendar, Activity, ChevronRight, FolderOpen, Loader2, FileText, Trash2, X } from 'lucide-react';
 import toast, { Toaster } from 'react-hot-toast';
 import punjabLogo from '../assets/punjab_logo.png';
+import LoadingSpinner from '../components/LoadingSpinner';
 
 const INITIAL_SCHEME_STATE = {
     gs_no: '',
@@ -179,10 +180,7 @@ const Dashboard = () => {
             </div>
 
             {loading ? (
-                <div className="flex flex-col items-center justify-center py-20 text-slate-500 gap-4">
-                    <Loader2 className="w-10 h-10 animate-spin text-blue-500" />
-                    <p>Loading projects...</p>
-                </div>
+                <LoadingSpinner message="Fetching construction schemes..." />
             ) : schemes.length === 0 ? (
                 <div className="glass-card rounded-3xl p-12 text-center space-y-4">
                     <div className="bg-slate-100 w-20 h-20 rounded-2xl flex items-center justify-center mx-auto border border-slate-200">

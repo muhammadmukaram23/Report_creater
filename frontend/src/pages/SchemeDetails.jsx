@@ -3,9 +3,10 @@ import { useParams, useNavigate } from 'react-router-dom';
 import { schemeService, componentService, uploadService, getImageUrl } from '../api';
 import {
     ArrowLeft, Plus, Image as ImageIcon, Trash2, Save,
-    Loader2, Upload, X, Edit2, Check
+    Loader2, Upload, X, Edit2, Check, ExternalLink
 } from 'lucide-react';
 import toast, { Toaster } from 'react-hot-toast';
+import LoadingSpinner from '../components/LoadingSpinner';
 
 const SchemeDetails = () => {
     const { gs_no } = useParams();
@@ -236,9 +237,8 @@ const SchemeDetails = () => {
     };
 
     if (loading) return (
-        <div className="flex flex-col items-center justify-center py-40">
-            <Loader2 className="w-12 h-12 animate-spin text-emerald-500 mb-4" />
-            <p className="text-slate-600">Loading scheme details...</p>
+        <div className="min-h-[70vh] flex items-center justify-center">
+            <LoadingSpinner message="Gathering scheme details & components..." />
         </div>
     );
 

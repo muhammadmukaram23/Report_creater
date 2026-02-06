@@ -55,6 +55,7 @@ body {
 
 .btn-premium {
   background: linear-gradient(135deg, #116945 0%, #0d5135 100%);
+  color: white;
   transition: all 0.3s ease;
 }
 
