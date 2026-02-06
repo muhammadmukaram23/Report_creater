@@ -1,7 +1,7 @@
 import axios from 'axios';
 
-const API_BASE_URL = 'http://localhost:8000/api';
-const UPLOADS_BASE_URL = 'http://localhost:8000/uploads';
+const API_BASE_URL = '/api';
+const UPLOADS_BASE_URL = '/uploads';
 
 const api = axios.create({
     baseURL: API_BASE_URL,

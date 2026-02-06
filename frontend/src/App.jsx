@@ -9,10 +9,10 @@ import ProtectedRoute from './components/ProtectedRoute';
 function App() {
   return (
     <Router>
-      <div className="min-h-screen bg-[#0f172a] text-slate-200">
+      <div className="min-h-screen bg-gradient-to-br from-slate-50 to-emerald-50 text-slate-800">
         <Toaster position="top-right" />
         <Navbar />
-        <main className="container mx-auto px-4 py-8">
+        <main className="container mx-auto" style={{ maxWidth: '1400px' }}>
           <Routes>
             <Route path="/login" element={<Login />} />
             <Route
@@ -33,6 +33,9 @@ function App() {
             />
           </Routes>
         </main>
+        <footer className="py-8 text-center text-slate-400 text-xs">
+          <p>Made by Muhammad Mukaram Happy Coding! 😊</p>
+        </footer>
       </div>
     </Router>
   );
