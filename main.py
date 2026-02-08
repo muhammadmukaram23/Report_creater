@@ -189,43 +189,114 @@ def save_upload_file(upload_file: UploadFile, destination: Path) -> str:
 # ============== External API Proxy ==============
 
 # CFY Review (Punjab SMDP)
-BEARER_TOKEN = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1bmlxdWVfbmFtZSI6InNvLmRldi50b3VyIiwiQ2xpZW50SVAiOiIxMTYuOTAuMTI1LjE4OCIsIm5iZiI6MTc3MDQ3Njg0NSwiZXhwIjoxNzcwNTYzMjQ1LCJpYXQiOjE3NzA0NzY4NDV9.1kfu_cV4gVIM2TrtIPBshT2TtXd_ipcjcGP8xj-t3GQ"
-EXTERNAL_API_URL = "https://smdpservice.punjab.gov.pk/api/CFYReviewDashboard/GetCFYReviewDashboardListSection"
 
-# Tourism API
+
+# Tourism API (Datsystems)
 TOURISM_API_URL = "https://tourism.datsystems.co/api/projects/"
 TOURISM_BEARER_TOKEN = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VySWQiOiJlYjFiN2ZiZS0yZmYwLTQ1NzYtODFmMS00YjlhMTdmMWI1ODMiLCJpYXQiOjE3NzA0MDI5NjQsImV4cCI6MTc3MTAwNzc2NH0.CQIuvI1c5p6cJCzd3KCcv8YD6VNKdhoiSsaHYwBwh28"
 REPORTS_API_URL = "https://tourism.datsystems.co/api/reports"
 
-@app.get("/api/get_project")
-async def get_project(gsNo: str = Query("", description="GS Number to search"), filterID: str = Query("1", description="Filter ID")):
-    """
-    Fetch project info dynamically by gsNo and FilterID from external government service
-    """
-    payload = {
-        "FinancialYearId": 12, "UserID": "2127", "UserTypeID": 3, "SubSectorID": None, "sectorID": None,
-        "DivisionID": None, "DistrictID": None, "ConstituencyID": None, "TehsilID": None, "DepartmentID": None,
-        "DeptGroupID": None, "PPID": None, "SchemeTypeID": None, "SchemeSubTypeID": None, "ProjectStatusTypeID": None,
-        "FundingCostType": None, "ValueTypeID": None, "ApprovalStatus": "", "ApprovalStatusCatFilterID": None,
-        "IsFullyFunded": None, "ExecutingAgencyIdCSV": "", "SponsorAgencyIdCSV": "", "RegionIdCSV": "",
-        "FilterID": filterID, "SearchText": gsNo, "SortColName": "gsNo", "SortDirection": "asc",
-        "PageNo": 1, "PageSize": 50, "_search": False, "ListFilterID": None, "nd": 1770477642807
-    }
 
-    headers = {
-        "Content-Type": "application/json",
-        "Accept": "application/json",
-        "Authorization": f"Bearer {BEARER_TOKEN}"
+#this is SMDP API
+BEARER_TOKEN = (
+    "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9."
+    "eyJ1bmlxdWVfbmFtZSI6InNvLmRldi50b3VyIiwi"
+    "Q2xpZW50SVAiOiIxMTYuOTAuMTI1LjEzNCIsIm5iZiI6"
+    "MTc3MDU3NDgxNSwiZXhwIjoxNzcwNjYxMjE1LCJpYXQi"
+    "OjE3NzA1NzQ4MTV9."
+    "qAMV2EeOE_Cvty9bv8zRAVrXbE2X3ZsoMgkWi2lm6Rw"
+)
+
+EXTERNAL_API_URL = (
+    "https://smdpservice.punjab.gov.pk/api/"
+    "MPRGraphDashboard/GetADPDashBoardProjectListGridData"
+)
+
+# ============== COMMON HEADERS ==============
+
+HEADERS = {
+    "Authorization": f"Bearer {BEARER_TOKEN}",
+    "Accept": "application/json",
+    "User-Agent": "Mozilla/5.0",
+    "Referer": "https://smdpservice.punjab.gov.pk/",
+    "Origin": "https://smdpservice.punjab.gov.pk"
+}
+
+# ================= API =====================
+#smdp api
+@app.get("/api/get_project")
+def get_project(
+    gsNo: str = Query("", description="GS Number"),
+    page: int = 1,
+    rows: int = 50
+):
+    """
+    Proxy API to Punjab SMDP service
+    """
+
+    params = {
+        "financialYearId": "12",
+        "userID": "2127",
+        "sectorID": "null",
+        "subSectorID": "null",
+        "divisionID": "null",
+        "districtID": "null",
+        "constituencyID": "null",
+        "tehsilID": "null",
+        "ppID": "null",
+        "userTypeID": "3",
+        "reportTypeID": "0",
+        "reportProposedTypeID": "0",
+        "reportSubTypeID": "0",
+        "DraftStatusID": "0",
+        "departmentID": "null",
+        "schemeTypeID": "null",
+        "schemeSubTypeID": "null",
+        "percentageStart": "0",
+        "percentageEnd": "0",
+        "statusTypeID": "null",
+        "fundingCostType": "null",
+        "approvalStatus": "",
+        "isFullyFunded": "false",
+        "regionID": "null",
+        "approvalStatusCatFilterID": "null",
+        "regionIdCSV": "",
+        "ExecutingAgencyIdCSV": "",
+        "SponsorAgencyIdCSV": "",
+        "deptGroupID": "null",
+        "searchText": gsNo.strip() if gsNo else "",
+        "FilterID": "null",
+        "isOnGoing": "false",
+        "onGoingRangeCategoryID": "null",
+        "fullyFundedCategoryID": "null",
+        "IsCompleteProgress": "false",
+        "CompleteProgressRangeCategoryID": "null",
+        "_search": "false",
+        "rows": str(rows),
+        "page": str(page),
+        "sidx": "gsNo",
+        "sord": "asc",
+        "nd": "1770575180022"
     }
 
     try:
-        response = requests.post(EXTERNAL_API_URL, json=payload, headers=headers)
-        if response.status_code == 200:
-            return JSONResponse(content=response.json())
-        return JSONResponse(content={"error": "Failed to fetch data", "status": response.status_code}, status_code=response.status_code)
-    except Exception as e:
-        return JSONResponse(content={"error": str(e)}, status_code=500)
+        response = requests.get(
+            EXTERNAL_API_URL,
+            headers=HEADERS,
+            params=params,
+            timeout=30
+        )
 
+        return JSONResponse(
+            status_code=response.status_code,
+            content=response.json()
+        )
+
+    except requests.exceptions.RequestException as e:
+        return JSONResponse(
+            status_code=500,
+            content={"error": str(e)}
+        )
 @app.get("/api/get_project_structure/{project_id}")
 async def get_project_structure(project_id: str):
     """

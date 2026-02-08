@@ -166,8 +166,8 @@ const ExternalSearch = () => {
                                         <td className="px-5 py-6 text-sm font-black text-emerald-700 border-r border-slate-100 text-right bg-emerald-50/20">{formatCurrency(project.allocation)}</td>
                                         <td className="px-5 py-6 text-sm font-black text-emerald-700 border-r border-slate-100 text-right bg-emerald-50/20">{formatCurrency(project.revisedAllocation)}</td>
                                         <td className="px-5 py-6 text-sm font-bold text-blue-700 border-r border-slate-100 text-right bg-blue-50/10">{formatCurrency(project.releaseByPD)}</td>
-                                        <td className="px-5 py-6 text-sm font-bold text-blue-700 border-r border-slate-100 text-right bg-blue-50/10">{formatCurrency(project.releaseByFD)}</td>
-                                        <td className="px-5 py-6 text-sm font-bold text-blue-700 border-r border-slate-100 text-right bg-blue-50/10">{formatCurrency(project.releaseReceived)}</td>
+                                        <td className="px-5 py-6 text-sm font-bold text-blue-700 border-r border-slate-100 text-right bg-blue-50/10">{formatCurrency(project.financeReleaseFD)}</td>
+                                        <td className="px-5 py-6 text-sm font-bold text-blue-700 border-r border-slate-100 text-right bg-blue-50/10">{formatCurrency(project.financeReleasePifra)}</td>
                                         <td className="px-5 py-6 text-sm font-black text-orange-700 border-r border-slate-100 text-right bg-orange-50/20">{formatCurrency(project.utilication)}</td>
                                         <td className="px-5 py-6 text-center border-r border-slate-100 bg-orange-50/20">
                                             <div className="flex flex-col items-center gap-1">
@@ -180,9 +180,9 @@ const ExternalSearch = () => {
                                         <td className="px-5 py-6 text-center border-r border-slate-100 bg-orange-50/20">
                                             <div className="flex flex-col items-center gap-1">
                                                 <div className="w-12 bg-orange-100 rounded-full h-1 overflow-hidden">
-                                                    <div className="bg-orange-600 h-full" style={{ width: `${Math.min(project.utilicationPercentReviseAllocation, 100)}%` }}></div>
+                                                    <div className="bg-orange-600 h-full" style={{ width: `${Math.min(project.utilicationPercentGrade, 100)}%` }}></div>
                                                 </div>
-                                                <span className="text-[10px] font-black text-orange-700">{project.utilicationPercentReviseAllocation}%</span>
+                                                <span className="text-[10px] font-black text-orange-700">{project.utilicationPercentGrade}%</span>
                                             </div>
                                         </td>
                                         <td className="px-5 py-6 text-sm font-black text-slate-800 text-right bg-slate-50/30">{formatCurrency(project.totalThrowForward)}</td>
