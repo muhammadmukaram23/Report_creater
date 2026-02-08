@@ -5,7 +5,7 @@ import {
     ArrowLeft, Plus, Image as ImageIcon, Trash2, Save,
     Loader2, Upload, X, Edit2, Check, ExternalLink
 } from 'lucide-react';
-import toast, { Toaster } from 'react-hot-toast';
+import toast from 'react-hot-toast';
 import LoadingSpinner from '../components/LoadingSpinner';
 
 const SchemeDetails = () => {
@@ -244,7 +244,7 @@ const SchemeDetails = () => {
 
     return (
         <div className="space-y-6 pb-20 px-4 sm:px-6 lg:px-8 py-6 relative">
-            <Toaster position="top-right" />
+
 
             {/* Premium Upload Loader Overlay */}
             {uploading && (

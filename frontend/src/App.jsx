@@ -5,6 +5,10 @@ import SchemeDetails from './pages/SchemeDetails';
 import { Toaster } from 'react-hot-toast';
 import Login from './pages/Login';
 import ProtectedRoute from './components/ProtectedRoute';
+import ExternalSearch from './pages/ExternalSearch';
+import ProjectOverview from './pages/ProjectOverview';
+import Reports from './pages/Reports';
+import ReportDetails from './pages/ReportDetails';
 
 function App() {
   return (
@@ -28,6 +32,38 @@ function App() {
               element={
                 <ProtectedRoute>
                   <SchemeDetails />
+                </ProtectedRoute>
+              }
+            />
+            <Route
+              path="/external-search"
+              element={
+                <ProtectedRoute>
+                  <ExternalSearch />
+                </ProtectedRoute>
+              }
+            />
+            <Route
+              path="/project-overview"
+              element={
+                <ProtectedRoute>
+                  <ProjectOverview />
+                </ProtectedRoute>
+              }
+            />
+            <Route
+              path="/reports"
+              element={
+                <ProtectedRoute>
+                  <Reports />
+                </ProtectedRoute>
+              }
+            />
+            <Route
+              path="/reports/:reportId"
+              element={
+                <ProtectedRoute>
+                  <ReportDetails />
                 </ProtectedRoute>
               }
             />

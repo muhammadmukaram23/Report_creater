@@ -13,6 +13,11 @@ export const schemeService = {
     create: (data) => api.post('/scheme', data),
     update: (id, data) => api.put(`/scheme/${id}`, data),
     delete: (id) => api.delete(`/scheme/${id}`),
+    getExternalProject: (gsNo, filterID = '1') => api.get('/get_project', { params: { gsNo, filterID } }),
+    getProjectStructure: (projectId) => api.get(`/get_project_structure/${projectId}`),
+    getProjectDetails: (projectId) => api.get(`/get_project_details/${projectId}`),
+    getReports: () => api.get('/get_reports'),
+    getReportDetails: (reportId) => api.get(`/get_report_details/${reportId}`),
 };
 
 export const componentService = {

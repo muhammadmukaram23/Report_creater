@@ -1,7 +1,7 @@
 import { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { Lock, User, Loader2 } from 'lucide-react';
-import toast, { Toaster } from 'react-hot-toast';
+import toast from 'react-hot-toast';
 import punjabLogo from '../assets/punjab_logo.png';
 
 const Login = () => {
@@ -32,7 +32,7 @@ const Login = () => {
 
     return (
         <div className="min-h-[85vh] flex items-center justify-center p-4">
-            <Toaster position="top-right" />
+
             <div className="glass-card w-full max-w-md rounded-3xl p-8 sm:p-10 space-y-8 animate-in fade-in zoom-in duration-500">
                 <div className="text-center space-y-2">
                     <img src={punjabLogo} alt="Punjab Government Logo" className="w-24 h-auto mx-auto mb-4" />

@@ -2,7 +2,7 @@ import { useState, useEffect, useCallback } from 'react';
 import { Link } from 'react-router-dom';
 import { schemeService } from '../api';
 import { Plus, Calendar, Activity, ChevronRight, FolderOpen, Loader2, FileText, Trash2, X } from 'lucide-react';
-import toast, { Toaster } from 'react-hot-toast';
+import toast from 'react-hot-toast';
 import punjabLogo from '../assets/punjab_logo.png';
 import LoadingSpinner from '../components/LoadingSpinner';
 
@@ -108,7 +108,7 @@ const Dashboard = () => {
 
     return (
         <div className="space-y-6 sm:space-y-8 animate-in fade-in duration-300 px-4 sm:px-6 lg:px-8 py-6">
-            <Toaster position="top-right" />
+
 
             <div className="space-y-4">
                 <div className="flex items-center gap-4">

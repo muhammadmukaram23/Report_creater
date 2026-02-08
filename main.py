@@ -14,6 +14,8 @@ import io
 from jinja2 import Environment, FileSystemLoader
 from xhtml2pdf import pisa
 from fastapi.responses import StreamingResponse
+import requests
+from fastapi.responses import JSONResponse
 
 import database
 from config import CORS_ORIGINS, BEFORE_IMAGE_DIR, AFTER_IMAGE_DIR, ALLOWED_EXTENSIONS, MAX_FILE_SIZE
@@ -182,6 +184,122 @@ def save_upload_file(upload_file: UploadFile, destination: Path) -> str:
         buffer.write(upload_file.file.read())
     
     return unique_filename
+
+
+# ============== External API Proxy ==============
+
+# CFY Review (Punjab SMDP)
+BEARER_TOKEN = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1bmlxdWVfbmFtZSI6InNvLmRldi50b3VyIiwiQ2xpZW50SVAiOiIxMTYuOTAuMTI1LjE4OCIsIm5iZiI6MTc3MDQ3Njg0NSwiZXhwIjoxNzcwNTYzMjQ1LCJpYXQiOjE3NzA0NzY4NDV9.1kfu_cV4gVIM2TrtIPBshT2TtXd_ipcjcGP8xj-t3GQ"
+EXTERNAL_API_URL = "https://smdpservice.punjab.gov.pk/api/CFYReviewDashboard/GetCFYReviewDashboardListSection"
+
+# Tourism API
+TOURISM_API_URL = "https://tourism.datsystems.co/api/projects/"
+TOURISM_BEARER_TOKEN = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VySWQiOiJlYjFiN2ZiZS0yZmYwLTQ1NzYtODFmMS00YjlhMTdmMWI1ODMiLCJpYXQiOjE3NzA0MDI5NjQsImV4cCI6MTc3MTAwNzc2NH0.CQIuvI1c5p6cJCzd3KCcv8YD6VNKdhoiSsaHYwBwh28"
+REPORTS_API_URL = "https://tourism.datsystems.co/api/reports"
+
+@app.get("/api/get_project")
+async def get_project(gsNo: str = Query("", description="GS Number to search"), filterID: str = Query("1", description="Filter ID")):
+    """
+    Fetch project info dynamically by gsNo and FilterID from external government service
+    """
+    payload = {
+        "FinancialYearId": 12, "UserID": "2127", "UserTypeID": 3, "SubSectorID": None, "sectorID": None,
+        "DivisionID": None, "DistrictID": None, "ConstituencyID": None, "TehsilID": None, "DepartmentID": None,
+        "DeptGroupID": None, "PPID": None, "SchemeTypeID": None, "SchemeSubTypeID": None, "ProjectStatusTypeID": None,
+        "FundingCostType": None, "ValueTypeID": None, "ApprovalStatus": "", "ApprovalStatusCatFilterID": None,
+        "IsFullyFunded": None, "ExecutingAgencyIdCSV": "", "SponsorAgencyIdCSV": "", "RegionIdCSV": "",
+        "FilterID": filterID, "SearchText": gsNo, "SortColName": "gsNo", "SortDirection": "asc",
+        "PageNo": 1, "PageSize": 50, "_search": False, "ListFilterID": None, "nd": 1770477642807
+    }
+
+    headers = {
+        "Content-Type": "application/json",
+        "Accept": "application/json",
+        "Authorization": f"Bearer {BEARER_TOKEN}"
+    }
+
+    try:
+        response = requests.post(EXTERNAL_API_URL, json=payload, headers=headers)
+        if response.status_code == 200:
+            return JSONResponse(content=response.json())
+        return JSONResponse(content={"error": "Failed to fetch data", "status": response.status_code}, status_code=response.status_code)
+    except Exception as e:
+        return JSONResponse(content={"error": str(e)}, status_code=500)
+
+@app.get("/api/get_project_structure/{project_id}")
+async def get_project_structure(project_id: str):
+    """
+    Fetch project structure from Tourism API
+    """
+    url = f"{TOURISM_API_URL}{project_id}/structure"
+    headers = {
+        "Accept": "application/json",
+        "Authorization": f"Bearer {TOURISM_BEARER_TOKEN}"
+    }
+
+    try:
+        response = requests.get(url, headers=headers)
+        if response.status_code == 200:
+            return JSONResponse(content=response.json())
+        return JSONResponse(content={"error": "Failed to fetch structure", "status": response.status_code}, status_code=response.status_code)
+    except Exception as e:
+        return JSONResponse(content={"error": str(e)}, status_code=500)
+
+@app.get("/api/get_project_details/{project_id}")
+async def get_project_details(project_id: str):
+    """
+    Fetch comprehensive project details from Tourism API
+    """
+    url = f"{TOURISM_API_URL}{project_id}"
+    headers = {
+        "Accept": "application/json",
+        "Authorization": f"Bearer {TOURISM_BEARER_TOKEN}"
+    }
+
+    try:
+        response = requests.get(url, headers=headers)
+        if response.status_code == 200:
+            return JSONResponse(content=response.json())
+        return JSONResponse(content={"error": "Failed to fetch project details", "status": response.status_code}, status_code=response.status_code)
+    except Exception as e:
+        return JSONResponse(content={"error": str(e)}, status_code=500)
+
+@app.get("/api/get_reports")
+async def get_reports():
+    """
+    Fetch all site reports from Tourism API
+    """
+    headers = {
+        "Accept": "application/json",
+        "Authorization": f"Bearer {TOURISM_BEARER_TOKEN}"
+    }
+
+    try:
+        response = requests.get(REPORTS_API_URL, headers=headers)
+        if response.status_code == 200:
+            return JSONResponse(content=response.json())
+        return JSONResponse(content={"error": "Failed to fetch reports", "status": response.status_code}, status_code=response.status_code)
+    except Exception as e:
+        return JSONResponse(content={"error": str(e)}, status_code=500)
+
+@app.get("/api/get_report_details/{report_id}")
+async def get_report_details(report_id: str):
+    """
+    Fetch specific report details
+    """
+    url = f"{REPORTS_API_URL}/{report_id}"
+    headers = {
+        "Accept": "application/json",
+        "Authorization": f"Bearer {TOURISM_BEARER_TOKEN}"
+    }
+
+    try:
+        response = requests.get(url, headers=headers)
+        if response.status_code == 200:
+            return JSONResponse(content=response.json())
+        return JSONResponse(content={"error": "Failed to fetch report details", "status": response.status_code}, status_code=response.status_code)
+    except Exception as e:
+        return JSONResponse(content={"error": str(e)}, status_code=500)
 
 
 # ============== Root Endpoint ==============
@@ -806,6 +924,70 @@ async def get_component_images(comp_id: int):
         }
     except Exception as e:
         raise HTTPException(status_code=500, detail=f"Error fetching component images: {str(e)}")
+
+
+#extrnal api
+# Your Bearer token
+BEARER_TOKEN = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1bmlxdWVfbmFtZSI6InNvLmRldi50b3VyIiwiQ2xpZW50SVAiOiIxMTYuOTAuMTI1LjE4OCIsIm5iZiI6MTc3MDQ3Njg0NSwiZXhwIjoxNzcwNTYzMjQ1LCJpYXQiOjE3NzA0NzY4NDV9.1kfu_cV4gVIM2TrtIPBshT2TtXd_ipcjcGP8xj-t3GQ"
+
+# Remote API URL
+API_URL = "https://smdpservice.punjab.gov.pk/api/CFYReviewDashboard/GetCFYReviewDashboardListSection"
+
+@app.get("/get_project")
+def get_project(gsNo: str = Query("", description="GS Number to search"), filterID: str = Query("1", description="Filter ID")):
+    """
+    Fetch project info dynamically by gsNo and FilterID
+    """
+    payload = {
+        "FinancialYearId": 12,
+        "UserID": "2127",
+        "UserTypeID": 3,
+        "SubSectorID": None,
+        "sectorID": None,
+        "DivisionID": None,
+        "DistrictID": None,
+        "ConstituencyID": None,
+        "TehsilID": None,
+        "DepartmentID": None,
+        "DeptGroupID": None,
+        "PPID": None,
+        "SchemeTypeID": None,
+        "SchemeSubTypeID": None,
+        "ProjectStatusTypeID": None,
+        "FundingCostType": None,
+        "ValueTypeID": None,
+        "ApprovalStatus": "",
+        "ApprovalStatusCatFilterID": None,
+        "IsFullyFunded": None,
+        "ExecutingAgencyIdCSV": "",
+        "SponsorAgencyIdCSV": "",
+        "RegionIdCSV": "",
+        "FilterID": filterID,
+        "SearchText": gsNo,
+        "SortColName": "gsNo",
+        "SortDirection": "asc",
+        "PageNo": 1,
+        "PageSize": 50,
+        "_search": False,
+        "ListFilterID": None,
+        "nd": 1770477642807
+    }
+
+    headers = {
+        "Content-Type": "application/json",
+        "Accept": "application/json",
+        "Authorization": f"Bearer {BEARER_TOKEN}"
+    }
+
+    response = requests.post(API_URL, json=payload, headers=headers)
+
+    if response.status_code == 200:
+        return JSONResponse(content=response.json())
+    else:
+        return JSONResponse(
+            content={"error": "Failed to fetch data", "status_code": response.status_code},
+            status_code=response.status_code
+        )
 
 
 if __name__ == "__main__":
